@@ -1,0 +1,13 @@
+node_modules/
+users.json
+users.json.*
+admin.json
+analytics.json
+platform.json
+backups/
+downloads/
+*.bak*
+*.zip
+*.log
+index.html.before_codex_20261023
+index.html.before_library_20261023

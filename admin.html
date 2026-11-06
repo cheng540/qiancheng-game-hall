@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f4f5fb">
+<title>千城游戏厅 · 管理后台</title>
+<style>
+  :root{color-scheme:light;--bg:#f4f5fb;--panel:#fff;--text:#2f2b40;--muted:#8a88a0;--line:#e7e8f2;--accent:#8b6fe8;--accent2:#7b5fe0;--good:#2fb98f;--warn:#e0a12c;--bad:#e05a5a;--soft:#f4f0ff;--shadow:0 10px 30px rgba(47,32,80,.08)}
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  html{background:#f4f5fb}
+  body{margin:0;background:radial-gradient(ellipse 60% 40% at 6% 0%,#6fe0d114,transparent 60%),radial-gradient(ellipse 50% 40% at 96% 0%,#b486ff1a,transparent 60%),var(--bg);color:var(--text);font:14px/1.6 'Microsoft YaHei','PingFang SC',sans-serif;-webkit-font-smoothing:antialiased}
+  button,input,textarea,select{font:inherit;color:inherit}
+  button{cursor:pointer}
+  h1,h2,h3,p{margin:0}
+  .loginWrap{min-height:100vh;display:grid;place-items:center;padding:20px}
+  .loginCard{width:min(380px,100%);background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:30px 26px;box-shadow:var(--shadow);text-align:center}
+  .loginCard .mark{width:56px;height:56px;border-radius:18px;margin:0 auto 14px;display:grid;place-items:center;background:linear-gradient(145deg,#a98bf5,#7b5fe0);color:#fff;font-weight:900;font-size:24px;box-shadow:0 10px 22px #7b5fe040}
+  .loginCard h1{font-size:20px;letter-spacing:-.4px}
+  .loginCard p{color:var(--muted);font-size:12px;margin:6px 0 18px}
+  .field{text-align:left;margin-bottom:12px}
+  .field label{display:block;font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px}
+  .input{width:100%;height:44px;padding:0 13px;border:1px solid var(--line);border-radius:13px;background:#f8f8fd;outline:0}
+  .input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #8b6fe81c}
+  textarea.input{height:auto;min-height:96px;padding:10px 13px;resize:vertical;line-height:1.7}
+  .btn{height:40px;padding:0 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-weight:700;font-size:13px;transition:.15s}
+  .btn:hover{border-color:#cfc4f3}
+  .btn:active{transform:scale(.98)}
+  .btn.primary{background:linear-gradient(140deg,#a98bf5,#7b5fe0);border:0;color:#fff;box-shadow:0 6px 14px #7b5fe030}
+  .btn.wide{width:100%}
+  .btn.danger{color:#c23a3a;border-color:#f3d3d3;background:#fff7f7}
+  .btn.small{height:30px;padding:0 10px;font-size:11px;border-radius:9px}
+  .btn:disabled{opacity:.5;cursor:default}
+  .err{color:#d24a4a;font-size:12px;min-height:18px;margin-top:8px}
+
+  .top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(244,245,251,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .top .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.3px}
+  .top .brand i{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#a98bf5,#7b5fe0);color:#fff;font-style:normal;font-weight:900}
+  .top .spacer{flex:1}
+  .stats{display:flex;gap:8px;flex-wrap:wrap}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 12px;font-size:11px;color:var(--muted)}
+  .stat b{color:var(--text);font-size:13px;margin-right:4px}
+  .layout{display:flex;align-items:flex-start;gap:18px;max-width:1180px;margin:0 auto;padding:18px 18px 60px}
+  .side{position:sticky;top:76px;width:184px;flex:none;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:8px;box-shadow:var(--shadow)}
+  .side button{display:flex;align-items:center;gap:9px;width:100%;padding:10px 12px;border:0;border-radius:12px;background:transparent;font-weight:700;font-size:13px;color:var(--muted);text-align:left}
+  .side button i{font-style:normal;font-size:16px;width:20px;text-align:center}
+  .side button.on{background:linear-gradient(140deg,#a98bf5,#7b5fe0);color:#fff;box-shadow:0 6px 14px #7b5fe02e}
+  .main{flex:1;min-width:0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
+  .card h2{font-size:15px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .card h2 small{font-weight:400;color:var(--muted);font-size:11px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .row.between{justify-content:space-between}
+  .tableWrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
+  table{width:100%;border-collapse:collapse;min-width:640px}
+  th,td{padding:10px 12px;text-align:left;font-size:12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{background:#faf9ff;color:var(--muted);font-size:11px;font-weight:700;position:sticky;top:0}
+  tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:#fbfaff}
+  .coin{color:#b57b09;font-weight:700}
+  th.sortable{cursor:pointer;user-select:none}
+  th.sortable:hover{color:var(--accent2)}
+  th.sortable .arrow{font-size:9px;opacity:.35;margin-left:2px}
+  th.sortable.on{color:var(--accent2)}
+  th.sortable.on .arrow{opacity:1}
+  tbody tr{cursor:pointer}
+  .modal.wide{width:min(540px,100%)}
+  .detailHead{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .detailHead .av{width:46px;height:46px;border-radius:14px;background:var(--soft);display:grid;place-items:center;font-size:24px;flex:none}
+  .detailHead b{font-size:15px;display:block}
+  .detailHead small{color:var(--muted);font-size:11px}
+  .detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+  .detailGrid .item{background:#faf9ff;border:1px solid var(--line);border-radius:12px;padding:8px 11px}
+  .detailGrid .item small{display:block;color:var(--muted);font-size:10px;margin-bottom:2px}
+  .detailGrid .item b{font-size:14px;font-weight:800}
+  .detailLbl{font-size:11px;color:var(--muted);font-weight:700;display:block;margin-bottom:5px}
+  .logList{max-height:148px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:7px 11px;font-size:11px;color:#5d5673}
+  .logList div{padding:3px 0;border-bottom:1px dashed var(--line)}
+  .logList div:last-child{border-bottom:0}
+  .empty{padding:26px 10px;text-align:center;color:var(--muted);font-size:12px}
+  .pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:var(--soft);color:var(--accent2)}
+  .pill.good{background:#e4f8ef;color:#1d8a68}
+  .pill.warn{background:#fff3d6;color:#a97407}
+  .pill.bad{background:#ffe9e9;color:#c23a3a}
+  .pill.gray{background:#f1f2f7;color:var(--muted)}
+  .fb{border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+  .fb .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:11px;margin-bottom:6px}
+  .fb .text{font-size:13px;white-space:pre-wrap;margin-bottom:8px}
+  .fb .replyRow{display:grid;grid-template-columns:1fr 120px auto;gap:8px;align-items:end}
+  .annGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:16px;align-items:start}
+  .annList .item{border:1px solid var(--line);border-radius:16px;padding:13px;margin-bottom:10px}
+  .annList .item.on{border-color:#cdbef5;background:#fbfaff}
+  .annList b{font-size:13px;display:block;margin-bottom:4px}
+  .annList p{font-size:11px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .annList .ops{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .check{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+  .check input{accent-color:var(--accent);width:15px;height:15px}
+  .preview{background:linear-gradient(160deg,#fbf7ff,#f3edff);border:1px dashed #d9cef4;border-radius:16px;padding:14px}
+  .preview .badge{display:inline-block;font-size:10px;font-weight:800;color:#7b5fe0;background:#fff;border-radius:20px;padding:2px 9px;margin-bottom:8px}
+  .preview h3{font-size:16px;margin-bottom:6px}
+  .preview .body{font-size:12px;color:#5d5673;white-space:pre-wrap;line-height:1.8}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#2f2b40;color:#fff;padding:10px 18px;border-radius:14px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:80vw}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .mask{position:fixed;inset:0;z-index:50;background:rgba(26,16,48,.5);backdrop-filter:blur(6px);display:grid;place-items:center;padding:18px}
+  .modal{width:min(420px,100%);background:var(--panel);border-radius:20px;padding:20px;box-shadow:0 24px 60px rgba(20,10,40,.3)}
+  .modal h3{font-size:16px;margin-bottom:14px}
+  .modal .ops{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+  .modal .ops .danger{margin-right:auto}
+  .dashGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin-bottom:16px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:13px 14px;box-shadow:var(--shadow)}
+  .kpi small{font-size:11px;color:var(--muted);display:block}
+  .kpi b{font-size:26px;font-weight:900;letter-spacing:-1px;display:block;margin:3px 0 2px;line-height:1.15}
+  .kpi span{font-size:10px;color:var(--muted)}
+  .kpi .up{color:#1d8a68}.kpi .down{color:#c23a3a}
+  .chart{display:flex;align-items:flex-end;gap:8px;height:150px;padding:10px 2px 0;border-bottom:1px solid var(--line)}
+  .chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;min-width:0}
+  .chart .bars{flex:1;display:flex;align-items:flex-end;gap:3px;width:100%;justify-content:center}
+  .chart .bar{width:26px;border-radius:8px 8px 0 0;min-height:2px;transition:height .3s}
+  .chart .bar.uv{background:linear-gradient(180deg,#b9a2f7,#8b6fe8)}
+  .chart .bar.newUsers{background:linear-gradient(180deg,#8fe3c4,#3cbf94)}
+  .chart .bar.pv{background:linear-gradient(180deg,#ffd9a3,#f0a93a)}
+  .chart .val{font-size:9px;color:var(--muted);line-height:1}
+  .chart .bar.nu{background:linear-gradient(180deg,#8fe3c4,#3cbf94)}
+  .chart .lbl{font-size:9px;color:var(--muted);white-space:nowrap}
+  .legend{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-top:12px;align-items:center}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+  .topGame{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:12px}
+  .topGame:last-child{border-bottom:0}
+  .topGame b{width:20px;color:var(--muted);font-size:11px}
+  .topGame span{flex:1}
+  .topGame em{font-style:normal;color:var(--muted);font-size:11px}
+  .dashAnn{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:12px}
+  .dashAnn:last-child{border-bottom:0}
+  .dashAnn b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+  .dashAnn small{color:var(--muted);font-size:10px;flex:none}
+  @media(max-width:860px){
+    .top{padding:10px 14px;flex-wrap:wrap}
+    .stats{order:3;width:100%}
+    .layout{padding:12px 12px 50px;flex-direction:column}
+    .side{position:static;width:100%;display:flex;gap:6px;overflow:auto;padding:6px}
+    .side button{width:auto;flex:none;padding:8px 14px}
+    .annGrid{grid-template-columns:1fr}
+    .fb .replyRow{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div id="login" class="loginWrap">
+  <form class="loginCard" id="loginForm" autocomplete="off">
+    <div class="mark">千</div>
+    <h1>管理后台</h1>
+    <p>千城游戏厅 · 仅限管理员登录</p>
+    <div class="field">
+      <label>管理密码</label>
+      <input class="input" id="pass" type="password" placeholder="输入管理密码" required>
+    </div>
+    <button class="btn primary wide" id="loginBtn" type="submit">登录</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="brand"><i>千</i><span>管理后台</span></div>
+    <div class="spacer"></div>
+    <div class="stats">
+      <span class="stat"><b id="stUsers">0</b>用户</span>
+      <span class="stat"><b id="stToday">0/30</b>今日注册</span>
+      <span class="stat"><b id="stAnn">0</b>公告</span>
+      <span class="stat"><b id="stFb">0</b>待处理反馈</span>
+    </div>
+    <button class="btn small" id="refresh">刷新</button>
+    <button class="btn small" id="logout">退出</button>
+  </header>
+
+  <div class="layout">
+    <nav class="side">
+      <button data-tab="dashboard" class="on"><i>📊</i>看板</button>
+      <button data-tab="users"><i>👥</i>用户管理</button>
+      <button data-tab="feedback"><i>💬</i>意见反馈</button>
+      <button data-tab="announce"><i>📢</i>公告发布</button>
+    </nav>
+
+    <main class="main">
+      <section data-view="dashboard">
+        <div class="dashGrid" id="kpis"></div>
+        <div class="card">
+          <h2>近 7 天访问 <small>UV / 新增用户</small></h2>
+          <div class="chart" id="chart"></div>
+          <div class="legend" id="chartTabs">
+            <button class="btn small primary" data-metric="uv">访客 UV</button>
+            <button class="btn small" data-metric="newUsers">新增用户</button>
+            <button class="btn small" data-metric="pv">浏览量 PV</button>
+          </div>
+        </div>
+        <div class="annGrid">
+          <div class="card"><h2>今日热门游戏 <small>按点开次数</small></h2><div id="topGames"></div></div>
+          <div class="card"><h2>最近公告</h2><div id="dashAnns"></div></div>
+        </div>
+      </section>
+
+      <section data-view="users" hidden>
+        <div class="card">
+          <h2>用户管理 <small id="userCount"></small></h2>
+          <div class="row between" style="margin-bottom:12px">
+            <input class="input" id="userSearch" placeholder="搜账号 ID / 昵称" style="max-width:280px;height:38px">
+            <div class="row">
+              <span class="stat" id="quotaStat">今日注册 —</span>
+              <button class="btn small" id="resetQuota">重置今日配额</button>
+            </div>
+          </div>
+          <div class="tableWrap">
+            <table>
+              <thead><tr>
+                <th>账号 ID / 手机号</th><th>头像</th><th>昵称</th>
+                <th class="sortable" data-sort="registered">注册时间<span class="arrow">▼</span></th>
+                <th class="sortable" data-sort="coins">金币<span class="arrow">▼</span></th>
+                <th class="sortable" data-sort="games">对局<span class="arrow">▼</span></th>
+                <th class="sortable" data-sort="rate">胜率<span class="arrow">▼</span></th>
+                <th class="sortable" data-sort="lastLogin">上次上线<span class="arrow">▼</span></th>
+                <th>操作</th>
+              </tr></thead>
+              <tbody id="userTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section data-view="feedback" hidden>
+        <div class="card">
+          <h2>意见反馈 <small>回复后会推到用户端</small></h2>
+          <div class="row" id="fbFilter" style="margin-bottom:12px">
+            <button class="btn small primary" data-fb="全部">全部</button>
+            <button class="btn small" data-fb="待处理">待处理</button>
+            <button class="btn small" data-fb="已回复">已回复</button>
+            <button class="btn small" data-fb="已关闭">已关闭</button>
+          </div>
+          <div id="fbList"></div>
+        </div>
+      </section>
+
+      <section data-view="announce" hidden>
+        <div class="annGrid">
+          <div class="card">
+            <h2 id="annFormTitle">写公告 <small>发布后会出现在首页弹窗</small></h2>
+            <div class="field">
+              <label>标题</label>
+              <input class="input" id="annTitle" maxlength="60" placeholder="例如：新游戏上线 / 周六晚八点联机局">
+            </div>
+            <div class="field">
+              <label>正文</label>
+              <textarea class="input" id="annBody" maxlength="3000" placeholder="支持换行，最多 3000 字。&#10;例如：今晚 20:00 联机大厅开黑，房间码会在群里发。"></textarea>
+            </div>
+            <div class="row" style="margin-bottom:12px">
+              <div class="field" style="margin:0;min-width:130px">
+                <label>级别</label>
+                <select class="input" id="annLevel" style="height:40px"><option value="normal">普通</option><option value="important">重要</option></select>
+              </div>
+              <label class="check"><input type="checkbox" id="annPopup" checked> 首页弹窗</label>
+              <label class="check"><input type="checkbox" id="annActive" checked> 立即发布</label>
+            </div>
+            <div class="row">
+              <button class="btn primary" id="annSave">保存并发布</button>
+              <button class="btn" id="annReset">清空 / 新建</button>
+              <span class="pill gray" id="annMode">新建公告</span>
+            </div>
+            <div style="margin-top:16px">
+              <label style="display:block;font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px">预览</label>
+              <div class="preview">
+                <span class="badge">公告</span>
+                <h3 id="prevTitle">公告标题</h3>
+                <div class="body" id="prevBody">公告正文会显示在这里。</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card annList">
+            <h2>已发布 <small id="annCount"></small></h2>
+            <div id="annList"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="mask" id="editMask" hidden>
+  <div class="modal">
+    <h3>编辑用户</h3>
+    <div class="field"><label>账号</label><input class="input" id="editPhone" disabled></div>
+    <div class="field"><label>昵称</label><input class="input" id="editNick" maxlength="8"></div>
+    <div class="field"><label>头像（emoji）</label><input class="input" id="editAvatar" maxlength="8"></div>
+    <div class="field"><label>金币</label><input class="input" id="editCoins" type="number" min="0" max="9999999"></div>
+    <div class="field"><label>新密码（留空不改）</label><input class="input" id="editPass" type="text" maxlength="20" placeholder="至少 4 位"></div>
+    <div class="ops">
+      <button class="btn danger" id="editDelete">删除用户</button>
+      <button class="btn" id="editCancel">取消</button>
+      <button class="btn primary" id="editSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="mask" id="detailMask" hidden>
+  <div class="modal wide">
+    <div class="detailHead">
+      <div class="av" id="dtAvatar">🙂</div>
+      <div style="min-width:0">
+        <b id="dtNick">—</b>
+        <small id="dtAccount">—</small>
+      </div>
+    </div>
+    <div class="detailGrid" id="dtGrid"></div>
+    <span class="detailLbl">最近上线记录 <span id="dtLogNote" style="font-weight:400"></span></span>
+    <div class="logList" id="dtLog"></div>
+    <div class="ops">
+      <button class="btn" id="dtClose">关闭</button>
+      <button class="btn primary" id="dtEdit">编辑资料</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const state = { token: sessionStorage.getItem('qc_admin_token') || '', users: [], feedback: [], anns: [], stats: null, fbFilter: '全部', editing: null, annEditing: null, chartMetric: 'uv', sort: { key: 'registered', dir: -1 }, quota: { count: 0, limit: 30, todayNew: 0 }, detail: null };
+
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const pad2 = n => String(n).padStart(2, '0');
+  const fmtDate = t => t ? new Date(t).toLocaleString('zh-CN', { hour12: false }) : '—';
+  const fmtFull = t => { if (!t) return '—'; const d = new Date(t); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
+  const fmtShort = t => { if (!t) return '—'; const d = new Date(t); return pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
+  function toast(msg) {
+    const el = $('toast'); el.textContent = msg; el.classList.add('show');
+    clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove('show'), 2400);
+  }
+  async function api(path, data = {}) {
+    const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminToken: state.token, ...data }) });
+    return r.json();
+  }
+
+  /* ---------- 登录 ---------- */
+  $('loginForm').onsubmit = async e => {
+    e.preventDefault();
+    const pass = $('pass').value.trim();
+    if (!pass) return;
+    $('loginBtn').disabled = true; $('loginErr').textContent = '';
+    try {
+      const r = await api('/api/admin/login', { pass });
+      if (!r.ok) { $('loginErr').textContent = r.msg || '登录失败'; return; }
+      state.token = r.adminToken; sessionStorage.setItem('qc_admin_token', state.token);
+      enter();
+    } catch (err) { $('loginErr').textContent = '网络异常，稍后再试'; }
+    finally { $('loginBtn').disabled = false; }
+  };
+  function logout() { sessionStorage.removeItem('qc_admin_token'); state.token = ''; location.reload(); }
+  $('logout').onclick = logout;
+
+  async function enter() {
+    $('login').hidden = true; $('app').hidden = false;
+    await refreshAll();
+  }
+  async function refreshAll() {
+    await Promise.all([loadUsers(), loadFeedback(), loadAnnouncements(), loadStats()]);
+    renderStats();
+    renderDashboard();
+  }
+  $('refresh').onclick = () => refreshAll().then(() => toast('已刷新'));
+
+  /* ---------- 导航 ---------- */
+  for (const b of document.querySelectorAll('[data-tab]')) {
+    b.onclick = () => {
+      for (const x of document.querySelectorAll('[data-tab]')) x.classList.toggle('on', x === b);
+      for (const v of document.querySelectorAll('[data-view]')) v.hidden = v.dataset.view !== b.dataset.tab;
+    };
+  }
+
+  /* ---------- 看板 ---------- */
+  const GAME_NAMES = { cat: '生气猫', qq: '球球大作战', fish: '大鱼吃小鱼', landlord: '斗地主', gomoku: '五子棋', xiangqi: '中国象棋', party: '聚会工具箱', ledger: '组队账本' };
+  for (const b of document.querySelectorAll('[data-metric]')) {
+    b.onclick = () => {
+      state.chartMetric = b.dataset.metric;
+      for (const x of document.querySelectorAll('[data-metric]')) x.classList.toggle('primary', x === b);
+      renderDashboard();
+    };
+  }
+  async function loadStats() {
+    const r = await api('/api/admin/stats');
+    if (!r.ok) return;
+    state.stats = r;
+  }
+  function renderDashboard() {
+    const s = state.stats;
+    if (!s) return;
+    const t = s.today;
+    const prev = s.series[s.series.length - 2] || { uv: 0, newUsers: 0, pv: 0 };
+    const pending = state.feedback.filter(f => f.status === '待处理').length;
+    const delta = (now, before) => {
+      const d = now - before;
+      if (!before) return '<span>' + (now ? '昨日无数据' : '暂无数据') + '</span>';
+      return d === 0 ? '<span>与昨日持平</span>' : '<span class="' + (d > 0 ? 'up' : 'down') + '">较昨日 ' + (d > 0 ? '+' : '') + d + '</span>';
+    };
+    const cards = [
+      ['今日新增用户', t.newUsers, delta(t.newUsers, prev.newUsers)],
+      ['今日访客 UV', t.uv, delta(t.uv, prev.uv)],
+      ['今日浏览量 PV', t.pv, '<span>含首页与各页面</span>'],
+      ['今日游戏点击', t.events.game_open || 0, '<span>点开游戏详情</span>'],
+      ['今日开房', t.events.room_create || 0, '<span>单机 + 联机</span>'],
+      ['待处理反馈', pending, '<span>需要回复</span>'],
+      ['注册配额（已用）', s.quota.count + '/' + s.quota.limit, '<span>今日新增 ' + (s.quota.todayNew || 0) + ' 人</span>'],
+      ['总用户', s.totals.users, '<span>含游客</span>'],
+    ];
+    $('kpis').innerHTML = cards.map(c => '<div class="kpi"><small>' + c[0] + '</small><b>' + c[1] + '</b>' + c[2] + '</div>').join('');
+
+    const metric = state.chartMetric;
+    const max = Math.max(1, ...s.series.map(d => d[metric] || 0));
+    $('chart').innerHTML = s.series.map(d => {
+      const v = d[metric] || 0;
+      return `<div class="col">
+        <span class="val">${v || ''}</span>
+        <div class="bars"><div class="bar ${metric}" style="height:${Math.round(v / max * 100)}%" title="${d.date} · ${v}"></div></div>
+        <span class="lbl">${d.date.slice(5)}</span></div>`;
+    }).join('');
+
+    const games = (t.games || []).slice(0, 6);
+    $('topGames').innerHTML = games.length
+      ? games.map((g, i) => `<div class="topGame"><b>${i + 1}</b><span>${GAME_NAMES[g.game] || g.game}</span><em>${g.count} 次</em></div>`).join('')
+      : '<div class="empty">今天还没有人点开游戏</div>';
+
+    const anns = state.anns.slice(0, 4);
+    $('dashAnns').innerHTML = anns.length
+      ? anns.map(a => `<div class="dashAnn"><span class="pill ${a.active ? 'good' : 'gray'}">${a.active ? '发布' : '草稿'}</span><b>${esc(a.title)}</b><small>${fmtDate(a.updated)}</small></div>`).join('')
+      : '<div class="empty">还没有公告</div>';
+    $('stToday').textContent = (s.quota.todayNew || 0) + '/' + s.quota.limit;
+  }
+
+  /* ---------- 用户 ---------- */
+  async function loadUsers() {
+    const r = await api('/api/admin/users');
+    if (!r.ok) { if (/未登录/.test(r.msg || '')) return logout(); toast(r.msg || '读取失败'); return; }
+    state.users = r.users || [];
+    state.quota = r.quota || { count: 0, limit: 30, todayNew: 0 };
+    const used = state.quota.todayNew || 0, limit = state.quota.limit || 30;
+    $('quotaStat').textContent = '今日新增 ' + used + ' · 剩余名额 ' + Math.max(0, limit - used);
+    $('stToday').textContent = used + '/' + limit;
+    $('userCount').textContent = '共 ' + state.users.length + ' 名';
+    renderUsers();
+  }
+  function sortVal(u, key) {
+    if (key === 'rate') return u.games ? u.wins / u.games : -1;
+    return Number(u[key] || 0);
+  }
+  function renderUsers() {
+    const q = $('userSearch').value.trim().toLowerCase();
+    let list = state.users.filter(u => !q || String(u.phone).toLowerCase().includes(q) || String(u.nickname || '').toLowerCase().includes(q) || String(u.id || '').toLowerCase().includes(q));
+    const { key, dir } = state.sort;
+    list = list.slice().sort((a, b) => {
+      const d = sortVal(a, key) - sortVal(b, key);
+      return dir > 0 ? d : -d;
+    });
+    for (const th of document.querySelectorAll('th.sortable')) {
+      const on = th.dataset.sort === key;
+      th.classList.toggle('on', on);
+      th.querySelector('.arrow').textContent = on ? (dir > 0 ? '▲' : '▼') : '▼';
+    }
+    const tb = $('userTable'); tb.replaceChildren();
+    if (!list.length) { tb.innerHTML = '<tr><td colspan="9"><div class="empty">没有匹配的用户</div></td></tr>'; return; }
+    for (const u of list) {
+      const tr = document.createElement('tr');
+      const rate = u.games ? Math.round(u.wins / u.games * 100) + '%' : '—';
+      tr.innerHTML = '<td>' + esc(u.phone) + '</td><td>' + esc(u.avatar || '🙂') + '</td><td>' + esc(u.nickname || '—') + '</td>'
+        + '<td>' + (u.registered ? fmtShort(u.registered) : '—') + '</td>'
+        + '<td class="coin">' + esc(u.coins) + '</td><td>' + esc(u.games) + '</td><td>' + rate + '</td>'
+        + '<td>' + (u.lastLogin ? fmtShort(u.lastLogin) : '<span class="pill gray">未上线</span>') + '</td>';
+      const td = document.createElement('td');
+      const detail = document.createElement('button'); detail.className = 'btn small'; detail.textContent = '详情';
+      detail.onclick = e => { e.stopPropagation(); openDetail(u); };
+      const edit = document.createElement('button'); edit.className = 'btn small'; edit.textContent = '编辑';
+      edit.style.marginLeft = '6px';
+      edit.onclick = e => { e.stopPropagation(); openEdit(u); };
+      td.append(detail, edit); tr.append(td);
+      tr.onclick = () => openDetail(u);
+      tb.append(tr);
+    }
+  }
+  for (const th of document.querySelectorAll('th.sortable')) {
+    th.onclick = () => {
+      const k = th.dataset.sort;
+      if (state.sort.key === k) state.sort.dir = -state.sort.dir;
+      else state.sort = { key: k, dir: -1 };
+      renderUsers();
+    };
+  }
+  $('userSearch').oninput = renderUsers;
+  $('resetQuota').onclick = async () => {
+    if (!confirm('把今日注册计数清零？')) return;
+    const r = await api('/api/admin/resetQuota');
+    toast(r.ok ? '名额已重置（今日新增记录不变）' : (r.msg || '失败'));
+    if (r.ok) loadUsers();
+  };
+  function openDetail(u) {
+    state.detail = u.phone;
+    $('dtAvatar').textContent = u.avatar || '🙂';
+    $('dtNick').textContent = (u.nickname || '未命名') + (u.guest && !/游客/.test(u.nickname || '') ? ' · 游客' : '');
+    $('dtAccount').textContent = (u.id ? u.id + ' · ' : '') + u.phone;
+    const rate = u.games ? Math.round(u.wins / u.games * 100) + '%' : '—';
+    const cells = [
+      ['注册时间', u.registered ? fmtFull(u.registered) : '未记录'],
+      ['上次上线', u.lastLogin ? fmtFull(u.lastLogin) : '未记录'],
+      ['累计上线', (u.loginCount || 0) + ' 次'],
+      ['活跃天数', (u.loginDays || 0) + ' 天'],
+      ['金币', String(u.coins || 0)],
+      ['对局 / 胜率', (u.games || 0) + ' 局 · ' + rate],
+    ];
+    $('dtGrid').innerHTML = cells.map(c => '<div class="item"><small>' + c[0] + '</small><b>' + esc(c[1]) + '</b></div>').join('');
+    const logs = (u.loginLog || []).slice().reverse();
+    if (!u.loginCount) $('dtLogNote').textContent = '（统计功能上线后开始记录）';
+    else $('dtLogNote').textContent = '（共 ' + u.loginCount + ' 次' + (u.loginCount > logs.length ? '，显示最近 ' + logs.length + ' 次' : '') + '）';
+    $('dtLog').innerHTML = logs.length
+      ? logs.map(t => '<div>' + fmtFull(t) + '</div>').join('')
+      : '<div style="color:var(--muted);padding:4px 0">还没有记录 · 老用户的历史上线无法回溯</div>';
+    $('detailMask').hidden = false;
+  }
+  $('dtClose').onclick = () => { $('detailMask').hidden = true; };
+  $('detailMask').onclick = e => { if (e.target === $('detailMask')) $('detailMask').hidden = true; };
+  $('dtEdit').onclick = () => {
+    const u = state.users.find(x => x.phone === state.detail);
+    $('detailMask').hidden = true;
+    if (u) openEdit(u);
+  };
+  function openEdit(u) {
+    state.editing = u.phone;
+    $('editPhone').value = u.phone;
+    $('editNick').value = u.nickname || '';
+    $('editAvatar').value = u.avatar || '🙂';
+    $('editCoins').value = u.coins || 0;
+    $('editPass').value = '';
+    $('editMask').hidden = false;
+  }
+  $('editCancel').onclick = () => { $('editMask').hidden = true; };
+  $('editMask').onclick = e => { if (e.target === $('editMask')) $('editMask').hidden = true; };
+  $('editSave').onclick = async () => {
+    const data = {
+      phone: state.editing,
+      nickname: $('editNick').value.trim(),
+      avatar: $('editAvatar').value.trim() || '🙂',
+      coins: Number($('editCoins').value) || 0,
+    };
+    const pass = $('editPass').value.trim();
+    if (pass) data.newPassword = pass;
+    const r = await api('/api/admin/update', data);
+    if (!r.ok) return toast(r.msg || '保存失败');
+    $('editMask').hidden = true; toast('已保存'); loadUsers();
+  };
+  $('editDelete').onclick = async () => {
+    if (!confirm('删除用户 ' + state.editing + ' ？该操作不可恢复。')) return;
+    const r = await api('/api/admin/delete', { phone: state.editing });
+    if (!r.ok) return toast(r.msg || '删除失败');
+    $('editMask').hidden = true; toast('已删除'); loadUsers();
+  };
+
+  /* ---------- 反馈 ---------- */
+  async function loadFeedback() {
+    const r = await api('/api/admin/feedback');
+    if (!r.ok) return;
+    state.feedback = (r.feedback || []).slice().reverse();
+    renderFeedback();
+  }
+  for (const b of document.querySelectorAll('[data-fb]')) {
+    b.onclick = () => {
+      state.fbFilter = b.dataset.fb;
+      for (const x of document.querySelectorAll('[data-fb]')) x.classList.toggle('primary', x === b);
+      renderFeedback();
+    };
+  }
+  function renderFeedback() {
+    const box = $('fbList'); box.replaceChildren();
+    const list = state.feedback.filter(f => state.fbFilter === '全部' || f.status === state.fbFilter);
+    if (!list.length) { box.innerHTML = '<div class="empty">暂时没有这类反馈</div>'; return; }
+    for (const f of list) {
+      const el = document.createElement('div'); el.className = 'fb';
+      const statusCls = f.status === '已回复' ? 'good' : f.status === '已关闭' ? 'gray' : 'warn';
+      el.innerHTML = '<div class="meta"><span class="pill">' + esc(f.type) + '</span><span>' + esc(f.user) + '</span><span>' + fmtDate(f.time) + '</span><span class="pill ' + statusCls + '">' + esc(f.status) + '</span></div>'
+        + '<div class="text">' + esc(f.text) + '</div>'
+        + '<div class="meta">联系方式：' + esc(f.contact || '未填写') + ' · 通知：' + esc(f.delivery || '站内') + '</div>'
+        + '<div class="replyRow"><textarea class="input" style="min-height:64px" maxlength="3000" placeholder="写回复…">' + esc(f.reply || '') + '</textarea>'
+        + '<select class="input" style="height:40px"><option' + (f.status === '待处理' ? ' selected' : '') + '>待处理</option><option' + (f.status === '已回复' ? ' selected' : '') + '>已回复</option><option' + (f.status === '已关闭' ? ' selected' : '') + '>已关闭</option></select>'
+        + '<button class="btn primary small">保存回复</button></div>';
+      const [ta, sel, btn] = [el.querySelector('textarea'), el.querySelector('select'), el.querySelector('button')];
+      btn.onclick = async () => {
+        btn.disabled = true;
+        const r = await api('/api/admin/feedback', { id: f.id, reply: ta.value, status: sel.value });
+        btn.disabled = false;
+        if (!r.ok) return toast(r.msg || '保存失败');
+        toast('回复已保存'); loadFeedback();
+      };
+      box.append(el);
+    }
+  }
+
+  /* ---------- 公告 ---------- */
+  async function loadAnnouncements() {
+    const r = await api('/api/admin/announcements');
+    if (!r.ok) return;
+    state.anns = r.announcements || [];
+    renderAnnList();
+    renderStats();
+  }
+  function resetAnnForm() {
+    state.annEditing = null;
+    $('annTitle').value = ''; $('annBody').value = '';
+    $('annLevel').value = 'normal'; $('annPopup').checked = true; $('annActive').checked = true;
+    $('annFormTitle').firstChild.textContent = '写公告 ';
+    $('annMode').textContent = '新建公告';
+    updatePreview();
+  }
+  function editAnn(id) {
+    const a = state.anns.find(x => x.id === id); if (!a) return;
+    state.annEditing = id;
+    $('annTitle').value = a.title; $('annBody').value = a.body;
+    $('annLevel').value = a.level === 'important' ? 'important' : 'normal';
+    $('annPopup').checked = !!a.popup; $('annActive').checked = !!a.active;
+    $('annFormTitle').firstChild.textContent = '编辑公告 ';
+    $('annMode').textContent = '编辑中 · ' + a.id;
+    updatePreview();
+    $('annTitle').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  function updatePreview() {
+    $('prevTitle').textContent = $('annTitle').value.trim() || '公告标题';
+    $('prevBody').textContent = $('annBody').value.trim() || '公告正文会显示在这里。';
+  }
+  $('annTitle').oninput = updatePreview;
+  $('annBody').oninput = updatePreview;
+  $('annReset').onclick = resetAnnForm;
+
+  $('annSave').onclick = async () => {
+    const title = $('annTitle').value.trim(), body = $('annBody').value.trim();
+    if (!title) return toast('标题不能为空');
+    if (!body) return toast('正文不能为空');
+    const btn = $('annSave'); btn.disabled = true;
+    const r = await api('/api/admin/announce/save', {
+      id: state.annEditing || undefined,
+      title, body,
+      level: $('annLevel').value,
+      popup: $('annPopup').checked,
+      active: $('annActive').checked,
+    });
+    btn.disabled = false;
+    if (!r.ok) return toast(r.msg || '保存失败');
+    toast(r.announcement.active ? '已发布' : '已保存为草稿');
+    resetAnnForm();
+    loadAnnouncements();
+  };
+
+  async function deleteAnn(id) {
+    if (!confirm('删除这条公告？')) return;
+    const r = await api('/api/admin/announce/delete', { id });
+    if (!r.ok) return toast(r.msg || '删除失败');
+    toast('已删除');
+    if (state.annEditing === id) resetAnnForm();
+    loadAnnouncements();
+  }
+  async function toggleAnn(id) {
+    const a = state.anns.find(x => x.id === id); if (!a) return;
+    const r = await api('/api/admin/announce/save', {
+      id: a.id, title: a.title, body: a.body, level: a.level, popup: a.popup !== false, active: !a.active,
+    });
+    if (!r.ok) return toast(r.msg || '操作失败');
+    toast(!a.active ? '已发布' : '已下线');
+    loadAnnouncements();
+  }
+
+  function renderAnnList() {
+    const box = $('annList'); box.replaceChildren();
+    $('annCount').textContent = state.anns.length ? '共 ' + state.anns.length + ' 条' : '';
+    if (!state.anns.length) { box.innerHTML = '<div class="empty">还没有公告，左边写一条试试</div>'; return; }
+    for (const a of state.anns) {
+      const el = document.createElement('div');
+      el.className = 'item' + (a.active ? ' on' : '');
+      el.innerHTML = '<b>' + esc(a.title) + '</b>'
+        + '<div class="meta" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:4px">'
+        + '<span class="pill ' + (a.active ? 'good' : 'gray') + '">' + (a.active ? '已发布' : '草稿') + '</span>'
+        + '<span class="pill ' + (a.level === 'important' ? 'bad' : '') + '">' + (a.level === 'important' ? '重要' : '普通') + '</span>'
+        + (a.popup ? '<span class="pill">弹窗</span>' : '<span class="pill gray">不弹窗</span>')
+        + '<span style="font-size:10px;color:var(--muted)">' + fmtDate(a.updated) + '</span></div>'
+        + '<p>' + esc(a.body).replace(/\n/g, ' ') + '</p>';
+      const ops = document.createElement('div'); ops.className = 'ops';
+      const bEdit = document.createElement('button'); bEdit.className = 'btn small'; bEdit.textContent = '编辑'; bEdit.onclick = () => editAnn(a.id);
+      const bToggle = document.createElement('button'); bToggle.className = 'btn small' + (a.active ? '' : ' primary'); bToggle.textContent = a.active ? '下线' : '发布'; bToggle.onclick = () => toggleAnn(a.id);
+      const bDel = document.createElement('button'); bDel.className = 'btn small danger'; bDel.textContent = '删除'; bDel.onclick = () => deleteAnn(a.id);
+      ops.append(bEdit, bToggle, bDel); el.append(ops); box.append(el);
+    }
+  }
+
+  function renderStats() {
+    $('stUsers').textContent = state.users.length;
+    $('stAnn').textContent = state.anns.filter(a => a.active).length;
+    $('stFb').textContent = state.feedback.filter(f => f.status === '待处理').length;
+    if (state.stats) renderDashboard();
+    const q = state.quota || {};
+    $('stToday').textContent = (q.todayNew || 0) + '/' + (q.limit || 30);
+  }
+
+  /* ---------- 启动 ---------- */
+  if (state.token) enter().catch(() => {});
+  else $('pass').focus();
+})();
+</script>
+</body>
+</html>

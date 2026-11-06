@@ -1,0 +1,1 @@
+﻿{"name":"qiancheng-game-club","private":true,"version":"2.0.0","dependencies":{"ws":"8.18.3","qrcode":"1.5.4"},"scripts":{"start":"node server.js"}}
